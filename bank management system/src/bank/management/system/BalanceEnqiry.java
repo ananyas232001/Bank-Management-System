@@ -1,0 +1,69 @@
+
+package bank.management.system;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.sql.*;
+
+public class BalanceEnqiry extends JFrame  implements ActionListener {
+    
+    JButton back;
+    String pinnumber;
+      BalanceEnqiry(String pinnumber){
+          
+          this.pinnumber=pinnumber;
+        setLayout(null);    
+        ImageIcon i = new ImageIcon(ClassLoader.getSystemResource("icons/image atm.jpg"));
+        Image im = i.getImage().getScaledInstance(900, 850, Image.SCALE_DEFAULT);
+        ImageIcon ima = new ImageIcon(im);
+        JLabel image = new JLabel(ima);
+        image.setBounds(0,0,900,900);
+        add(image);
+        
+        back  = new JButton("Back");
+        back.setBounds(590,520,150,30);
+        back.addActionListener(this);
+        image.add(back);
+        
+        Conn c = new Conn();
+        int balance = 0;
+            try{
+                
+                ResultSet rs = c.s.executeQuery("select * from bank where pin = '"+pinnumber+"' ");
+                
+                while(rs.next()){
+                    if (rs.getString("type").equals("Deposit")){
+                       balance += Integer.parseInt(rs.getString("amount")); 
+                    } else {
+                        balance -= Integer.parseInt(rs.getString("amount")); 
+                          }
+                }
+                }catch(Exception e){
+                System.out.println(e);
+            }
+                
+        JLabel text = new JLabel("Your Current Account Balance is Rs " + balance);
+        text.setBounds(170,300,400,30);
+        text.setForeground(Color.white);
+      
+        image.add(text);
+        
+        setSize(900,900);
+        setLocation(300,0);
+        setUndecorated(true);
+        setVisible(true);
+        
+}
+      
+       public void actionPerformed(ActionEvent ae){
+             setVisible(false);
+             new Transaction(pinnumber).setVisible(true);
+             }
+      public static void main(String[] args){
+              new BalanceEnqiry("").setVisible(true);
+    
+    
+    }
+
+}
